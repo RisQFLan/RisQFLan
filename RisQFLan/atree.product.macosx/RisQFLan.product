@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="RisQFLan" uid="RisQFLan" id="atree.product.macosx.product" application="org.eclipse.ui.ide.workbench" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+
+   <aboutInfo>
+      <image path="/atree.product/logo/logo250.gif"/>
+      <text>
+         RisQFLan: A Software Engineering Approach to Quantitative Security Risk Modeling and Analysis using QFLan
+      </text>
+   </aboutInfo>
+
+   <configIni use="default">
+   </configIni>
+
+   <launcherArgs>
+      <vmArgs>-Xmx2034M
+      </vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
+      </vmArgsMac>
+   </launcherArgs>
+
+   <windowImages i16="/atree.product/logo/logo16.gif" i32="/atree.product/logo/logo32.gif" i48="/atree.product/logo/logo48.gif" i64="/atree.product/logo/logo64.gif" i128="/atree.product/logo/logo128.gif" i256="/atree.product/logo/logo256.gif"/>
+
+   <splash
+      location="atree.product"
+      startupProgressRect="5,275,445,15"
+      startupMessageRect="7,252,445,20"
+      startupForegroundColor="000000" />
+   <launcher name="RisQFLan">
+      <linux icon="/atree.product/logo/logo.xpm"/>
+      <macosx icon="/atree.product/logo/logo.icns"/>
+      <win useIco="false">
+         <bmp
+            winSmallHigh="/atree.product/logo/logo16.bmp"
+            winMediumHigh="/atree.product/logo/logo32.bmp"
+            winLargeHigh="/atree.product/logo/logo48.bmp"
+            winExtraLargeHigh="/atree.product/logo/logo256.bmp"/>
+      </win>
+   </launcher>
+
+
+   <vm>
+   </vm>
+
+
+   <plugins>
+   </plugins>
+
+   <features>
+      <feature id="org.eclipse.equinox.p2.core.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
+      <feature id="org.eclipse.ecf.core.ssl.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
+      <feature id="org.eclipse.ecf.core.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.feature"/>
+      <feature id="atree.feature" version="1.0.0.qualifier"/>
+      <feature id="atree.platform.feature" version="1.0.0.qualifier"/>
+      <feature id="atree.platform.macosx.feature" version="1.0.0.qualifier"/>
+   </features>
+
+   <configurations>
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+   </configurations>
+
+   <repositories>
+      <repository location="http://github.com/qflanTeam/RisQFLan-updatesites/raw/master/repository-macosx" enabled="true" />
+   </repositories>
+
+   <preferencesInfo>
+      <targetfile overwrite="false"/>
+   </preferencesInfo>
+
+   <cssInfo>
+   </cssInfo>
+
+</product>
