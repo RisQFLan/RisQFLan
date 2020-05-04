@@ -78,10 +78,10 @@ public class MyParserUtil {
 				tOps.add(tOp);
 				sb.append(		
 						tOp+"() =\n"+
-								" if "+writeCond(q.getCond())+" \n"+
-								"	then { "+parsedObs+" }\n"+
-								"	else # "+tOp+"()\n"+
-						" fi ;\n");
+								" if"+writeCond(q.getCond())+" \n"+
+								"  then { "+parsedObs+" }\n"+
+								"  else # "+tOp+"()\n"+
+						        " fi;\n");
 				i++;
 			}	
 			for (String tOp : tOps) {
@@ -154,8 +154,8 @@ public class MyParserUtil {
 			sb.append(
 					tOp+"(numberOfStep) =\n"+
 					" if { s.rval(\"steps\") >= numberOfStep }\n"+
-					"	then { "+parsedObs+" }\n"+
-					"	else # "+tOp+"({numberOfStep})\n"+
+					"  then { "+parsedObs+" }\n"+
+					"  else # "+tOp+"({numberOfStep})\n"+
 					" fi ;\n");
 					//"eval parametric(");
 			i++;

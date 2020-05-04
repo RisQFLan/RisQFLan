@@ -23,13 +23,13 @@ public class MessageDialogShower implements atree.core.dialogs.IMessageDialogSho
 	
 	@Override
 	//public void showMessage(String message, String optionsLabel, ArrayList<String> options){
-	public void openMissingQFLanCoreLibraryDialog(String link, String linkShort/*, ArrayList<String> paths,String OS*/){
+	public void openMissingQFLanCoreLibraryDialog(String link, String linkShort/*, ArrayList<String> paths,String OS*/,boolean linux){
 		
 		Display.getDefault().syncExec(new Runnable() {
 			@Override
 			public void run() {
 				//MissingQflanCoreJarDialog dialog = new MissingQflanCoreJarDialog(parentShell,link,linkShort, paths,OS);
-				MissingAtreeCoreJarDialog dialog = new MissingAtreeCoreJarDialog(parentShell,link,linkShort/*, paths,OS*/);
+				MissingAtreeCoreJarDialog dialog = new MissingAtreeCoreJarDialog(parentShell,link,linkShort/*, paths,OS*/,linux);
 				dialog.open();
 				//System.out.println("The jar is in: "+dialog.getJarFileLocation());
 				BufferedWriter bw=null;

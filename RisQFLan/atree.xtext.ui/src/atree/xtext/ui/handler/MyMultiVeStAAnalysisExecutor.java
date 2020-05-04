@@ -74,7 +74,7 @@ public class MyMultiVeStAAnalysisExecutor {
 	private static final String libraryFileName="multivestaRisQFLan.jar";
 	public static final String FILEWITHLIBRARYFILELOCATION="pathOfMultivestaRisQFLan.txt";
 	public static final String LinkMultiVeStaRisQFLan = 
-		  "https://drive.google.com/u/0/uc?id=1tbQmmzCkltHrWimUbhfj17qlESnSUGxI&export=download";
+		  "https://bit.ly/mvrisqflan";//"https://drive.google.com/u/0/uc?id=1tbQmmzCkltHrWimUbhfj17qlESnSUGxI&export=download";
 		//"https://drive.google.com/file/d/1tbQmmzCkltHrWimUbhfj17qlESnSUGxI/view?usp=sharing&export=download"; 
 	    //"https://drive.google.com/uc?id=1xdcDrNsTilNy3bxjfd1KLbGDwAX0Wv4f&export=download"; //"https://dtudk-my.sharepoint.com/:u:/g/personal/anvan_win_dtu_dk/EfGDAwGVX81Fi-UcetisBVABq5F7Sne7dbHLI546lpRCtQ?e=Ly1Mxc"; //"https://www.dropbox.com/s/yj46t7c9urq8n2q/multivestaQFLan.jar?dl=1";
 	private static final int IR = 10; 
@@ -99,7 +99,7 @@ public class MyMultiVeStAAnalysisExecutor {
 
 		while(!librariesPresent){
 			try {
-				checkLibraries();
+				checkLibraries(consoleOut);
 			} catch (IOException e) {
 				NewVesta.printStackTrace(consoleOut,e);
 			}
@@ -761,23 +761,26 @@ public class MyMultiVeStAAnalysisExecutor {
 	}
 
 
-	private void checkLibraries() throws IOException {
-		/*
-    	String osName = System.getProperty("os.name");
-    	boolean win=false;
-    	boolean lin=false;
-    	boolean mac=false;*/
-		/*if(osName.contains("Windows")||osName.contains("Linux")||osName.contains("Mac")){
-    		if(osName.contains("Windows")){
-    			win=true;
-    		}
-    		else if(osName.contains("Linux")){
-    			lin=true;
-    		}
-    		else{
-    			mac=true;
-    		}
-    	}*/
+	private void checkLibraries(MessageConsoleStream out) throws IOException {
+
+		String osName = System.getProperty("os.name");
+		//boolean win=false;
+		boolean lin=false;
+		//boolean mac=false;
+		if(osName.contains("Linux")){
+			lin=true;
+		}
+//		if(osName.contains("Windows")||osName.contains("Linux")||osName.contains("Mac")){
+//			if(osName.contains("Windows")){
+//				win=true;
+//			}
+//			else if(osName.contains("Linux")){
+//				lin=true;
+//			}
+//			else{
+//				mac=true;
+//			}
+//		}
 		boolean weHaveJar = false;
 		File f = new File(FILEWITHLIBRARYFILELOCATION);
 		//String v = f.getAbsolutePath();
@@ -838,7 +841,9 @@ public class MyMultiVeStAAnalysisExecutor {
     				OS = "Linux";
     			}*/
 			//msgVisualizer.showMessage(msg,"and add its files to one of the following locations:",paths);
-			new MessageDialogShower(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell()).openMissingQFLanCoreLibraryDialog(link, linkShort /*, paths, OS*/);
+			NewVesta.println(out,"PLease download the jar "+link+" in the link below, and then provide its path to RisQFLan.");
+			NewVesta.println(out,link);
+			new MessageDialogShower(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell()).openMissingQFLanCoreLibraryDialog(link, linkShort /*, paths, OS*/,lin);
 		}
 		else{
 			librariesPresent=true;

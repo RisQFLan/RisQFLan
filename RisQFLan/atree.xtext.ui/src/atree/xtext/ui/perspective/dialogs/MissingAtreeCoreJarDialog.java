@@ -26,16 +26,18 @@ public class MissingAtreeCoreJarDialog extends Dialog {
 	private String pathShort;
 	//private ArrayList<String> paths;
 	//private String OS;
+	private boolean linux;
 
 	private String jarFileLocation;
 	//private org.eclipse.swt.widgets.Text text; 
 	
-	public MissingAtreeCoreJarDialog(Shell parentShell, String link, String linkShort/*, ArrayList<String> paths, String OS*/) {
+	public MissingAtreeCoreJarDialog(Shell parentShell, String link, String linkShort/*, ArrayList<String> paths, String OS*/,boolean linux) {
 		super(parentShell);
 		this.path=link;
 		this.pathShort=linkShort;
 		//this.paths=paths;
 		//this.OS=OS;
+		this.linux=linux;
 	}
 
 	@Override
@@ -63,19 +65,26 @@ public class MissingAtreeCoreJarDialog extends Dialog {
 	protected Control createDialogArea(Composite parent) {
 		Composite container = (Composite) super.createDialogArea(parent);
 		//getButton(SWT.OK).setEnabled(false);
-		Label messageLabel= new Label(container, SWT.WRAP);
+		
 		//messageLabel.setFont(parent.getFont());
 		//messageLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		Label messageLabel= new Label(container, SWT.WRAP);
 		messageLabel.setText("Please download the following archive:");
-		//msg = "Please download the archive \n   "+link32 +" or \n   "+link64+"\n"+"and add its files to one of the following locations:";
+		if(linux) {
+			//msg = "Please download the archive \n   "+link32 +" or \n   "+link64+"\n"+"and add its files to one of the following locations:";
+			Label link = new Label(container, SWT.WRAP);
+			link.setText(path);
+			link.setToolTipText("RisQFLan core library");
+		}
+		else {
+			//msg = "Please download the archive \n   "+link32 +" or \n   "+link64+"\n"+"and add its files to one of the following locations:";
+			Link link = new Link(container, SWT.NONE);
+			link.setText(createLink(path,pathShort));
+			link.setToolTipText("RisQFLan core library");
+			link.addSelectionListener(new MyWebSelectionListener());
 
-
-		Link link = new Link(container, SWT.NONE);
-		link.setText(createLink(path,pathShort));
-		link.setToolTipText("RisQFLan core library");
-
-		link.addSelectionListener(new MyWebSelectionListener());
-
+		}
+		
 		Label messageLabel2= new Label(container, SWT.WRAP);
 		//messageLabel.setFont(parent.getFont());
 		//messageLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
