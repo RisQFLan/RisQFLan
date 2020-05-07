@@ -73,6 +73,12 @@ import atree.xtext.bbt.Analysis
 import atree.xtext.bbt.NonParametricQueries
 import atree.xtext.bbt.ParametricQuery
 import java.util.LinkedHashMap
+import java.util.ArrayList
+import atree.xtext.bbt.AttributeValue
+import atree.xtext.bbt.ProcessState
+import atree.xtext.bbt.ProcessTransition
+import atree.xtext.bbt.Division
+import atree.xtext.bbt.Power
 
 /**
  * Generates code from your model files on save.
@@ -93,18 +99,26 @@ class BbtGenerator extends AbstractGenerator {
 		var modelName = modelDef.name
 		var variables = resource.allContents.filter(typeof(Variable))
 		var attackNodes = resource.allContents.filter(typeof(AttackNode)).toList
+		var defenseNodesList = resource.allContents.filter(typeof(DefenseNode)).toList
 		var defenseNodes = resource.allContents.filter(typeof(DefenseNode))
+		var countermeasureNodesList = resource.allContents.filter(typeof(CountermeasureNode)).toList
 		var countermeasureNodes = resource.allContents.filter(typeof(CountermeasureNode))
+		var relationsList = resource.allContents.filter(typeof(EdgeType)).toList
 		var relations = resource.allContents.filter(typeof(EdgeType))
+		var attributesList = resource.allContents.filter(typeof(Attribute)).toList
 		var attributes = resource.allContents.filter(typeof(Attribute))
 		var attackers = resource.allContents.filter(typeof(Attacker))
+		var defenseEffectivenessList = resource.allContents.filter(typeof(DefenseEffectivenessValues)).toList
 		var defenseEffectiveness = resource.allContents.filter(typeof(DefenseEffectivenessValues))
 		var actions = resource.allContents.filter(typeof(Action))
+		var detectionRatesList = resource.allContents.filter(typeof(AttackDetectionRateValue)).toList
 		var detectionRates = resource.allContents.filter(typeof(AttackDetectionRateValue))
 		var listOfActionConstraints = resource.allContents.filter(typeof(ActionConstraints))
 		var listOfQuantitativeConstraints = resource.allContents.filter(typeof(QuantitativeConstraints))
+		var attackDiagramsList = resource.allContents.filter(typeof(AttacksOfDiagram)).toList
 		var attackDiagrams = resource.allContents.filter(typeof(AttacksOfDiagram))
 		var initialAttacks = resource.allContents.filter(typeof(InitialAttack)).toList
+		
 
 		var javaEncoding =//'''package it.imt.qflan.core.models;
 '''
@@ -240,7 +254,39 @@ for(e : modelDef.elements){
 				.map[name]
 				.join(', '))*/
 	
+	//Here begins generation of .graphviz file (DOT file)
 	
+	var AttackTree=
+	'''
+/* Open in your favourite Graphviz viewer, e.g.
+ * https://dreampuf.github.io/GraphvizOnline/
+ * https://edotor.net/
+ */
+	digraph «modelName» {
+		
+		subgraph AttackTree {
+			«genAttackNodes(attackNodes.iterator, attributesList, detectionRatesList)»
+			«genDefenseNodes(defenseNodesList.iterator, attributesList, defenseEffectivenessList)»
+			«genCountermeasureNodes(countermeasureNodesList.iterator, attributesList, defenseEffectivenessList)»
+			«genEdges(relationsList.iterator)»
+		}
+		
+
+	}
+	'''
+	fsa.generateFile(modelName + 'Tree.dot', AttackTree)
+	
+	var AttackDiagram=
+	'''
+/* Open in your favourite Graphviz viewer, e.g.
+ * https://dreampuf.github.io/GraphvizOnline/
+ * https://edotor.net/
+ */
+	digraph «modelName» {
+		«genStates(attackDiagramsList.iterator)»
+	}
+	'''
+	fsa.generateFile(modelName + 'Attacker.dot', AttackDiagram)
 	
 	}
 		
@@ -870,6 +916,640 @@ AtreeVariable «variable.name» = model.addVariable("«variable.name»", «write
 			return e.childrenSet.children
 		}
 	}
+	
+	
+	//Graphviz methods
+	//Generate attack nodes
+		def genAttackNodes(Iterator<AttackNode> attackNodes, List<Attribute> attributes, List<AttackDetectionRateValue> detectionRates) {
+			if (attackNodes.empty) {
+				return ""
+			}
+			var sb = new StringBuffer()
+			sb.append(
+			'''
+			//AttackNodes definitions
+			node [shape=ellipse color=red penwidth=4.0]
+			''')
+			while (attackNodes.hasNext) {
+				var node = attackNodes.next
+				var relevantAttributes = getRelevantAttributes(node.name, attributes.iterator)
+				var relevantDRates = getRelevantDRates(node.name, detectionRates.iterator)
+				sb.append(
+					'''
+					«node.name» [label=<<table border="0"><tr><td><b><font point-size='20'>«node.name»</font></b></td></tr>'''
+				)
+				
+				sb.append(genAttributes(node.name, relevantAttributes))
+				
+				for (AttackDetectionRateValue dRate : relevantDRates) {
+					sb.append('''<tr><td>Detection Rate = «dRate.value.value»</td></tr>''')
+				}
+				
+				sb.append('''</table>>]''')
+				sb.append("\n")
+			}
+			sb.append("\n")
+			return sb.toString
+		}
+		
+		def genAttributes(String nodeID, ArrayList<Attribute> attributes) {
+			if (attributes.empty) {
+				return ""
+			}
+			var sb = new StringBuffer()
+			sb.append('''<tr><td><b>Attributes</b></td></tr>''')
+			for (Attribute attribute : attributes) {
+				for (AttributeValue attributeValue : attribute.values) {
+					if ((getNodeName(attributeValue.attribute)).equals(nodeID)) {
+						sb.append('''<tr><td>«attribute.name» = «attributeValue.value.evalExpr»</td></tr>''')
+					}
+				}
+			}
+			return sb.toString()			
+		}
+		
+		//Generate defense nodes
+		def genDefenseNodes(Iterator<DefenseNode> defenseNodes, List<Attribute> attributes, List<DefenseEffectivenessValues> effectivenessValues) {
+			if (defenseNodes.empty) {
+				return ""
+			}
+			var sb = new StringBuffer()
+			sb.append(
+				'''
+				//DefenseNodes definitions
+				node [shape=box color=green]
+				'''
+			)
+			while (defenseNodes.hasNext) {
+				var node = defenseNodes.next
+				var relevantAttributes = getRelevantAttributes(node.name, attributes.iterator)
+				var values = getRelevantEffectivenessValues(node.name, effectivenessValues.iterator)
+				sb.append(
+					'''
+					«node.name» [label=<<table border="0"><tr><td><b><font point-size='20'>«node.name»</font></b></td></tr>
+					'''
+				)
+				
+				sb.append(genAttributes(node.name, relevantAttributes))
+				sb.append(genDefenseEffectivenessValues(node.name, values))
+					
+					
+				sb.append('''</table>>]''')
+				sb.append("\n")	
+
+				}
+				
+			
+			
+			return sb.toString
+		}
+		
+		//Generate countermeasure nodes
+		def genCountermeasureNodes(Iterator<CountermeasureNode> cmNodes, List<Attribute> attributes, List<DefenseEffectivenessValues> effectivenessValues) {
+			if (cmNodes.empty) {
+				return ""
+			}
+			var sb = new StringBuffer()
+			var sbTriggers = new StringBuffer()
+			sb.append(
+				'''
+				//CountermeasureNodes definitions
+				node [shape=diamond color=purple]
+				'''
+			)
+			while (cmNodes.hasNext) {
+				var node = cmNodes.next
+				var relevantAttributes = getRelevantAttributes(node.name, attributes.iterator)
+				var values = getRelevantEffectivenessValues(node.name, effectivenessValues.iterator)
+				sb.append(
+					'''
+					«node.name» [label=<<table border="0"><tr><td><b><font point-size='20'>«node.name»</font></b></td></tr>
+					'''
+				)
+				sb.append(genAttributes(node.name, relevantAttributes))
+				sb.append(genDefenseEffectivenessValues(node.name, values))
+				sb.append('''</table>>]''')
+				sbTriggers.append(genTriggers(node))
+			}
+
+			sb.append("\n")	
+			sb.append("//Triggers\n")
+			sb.append(sbTriggers.toString + "\n")
+			return sb.toString
+		}
+		
+		//Generate triggers for a countermeasure node
+		def genTriggers(CountermeasureNode node) {
+			var sb = new StringBuffer()
+			var sbActivations = new StringBuffer()
+			//sb.append('''«node.name» -> ''')
+			var triggers = node.triggers.iterator
+				
+			while (triggers.hasNext) {
+				var trigger = triggers.next
+				if (triggers.hasNext) {
+					//sb.append('''«trigger.name» ''')
+					sbActivations.append('''«trigger.name» ''')
+				} else {
+					//sb.append(trigger.name)
+					sbActivations.append(trigger.name)
+				}
+					
+			}
+			//sb.append("} [style=dashed arrowhead=\"none\"]\n")
+			sb.append('''{«sbActivations»} -> «node.name» [style=dashed color=blue arrowhead="vee" penwidth=4.0]''')
+			sb.append("\n")
+			return sb.toString
+		}
+		
+		def cleanStateName(ProcessState state){
+			var name = state.name
+			return cleanStateName(name)
+		}
+		def cleanStateName(String name){
+			var cleanedName=name
+			if(name.startsWith("s")){
+				cleanedName = name.substring(1)
+			}
+			return cleanedName
+		}
+		
+		def genStates(Iterator<AttacksOfDiagram> attackDiagrams) {
+			var sb = new StringBuffer()
+			while (attackDiagrams.hasNext) {
+				var diagram = attackDiagrams.next
+				var states = diagram.eAllContents.filter(typeof(ProcessState))
+				sb.append(
+				'''
+				subgraph «diagram.attacker.name» {
+					//States
+					node [shape=box style=rounded color=blue penwidth=4.0]
+				'''
+				)
+				while (states.hasNext) {
+					var state = states.next
+					sb.append("\t")
+					sb.append(
+					'''
+					«cleanStateName(state.name)»
+					''')
+				}
+			
+				var transitions = diagram.eAllContents.filter(typeof(ProcessTransition))
+				sb.append("\t")
+				sb.append(
+				'''
+				//Transitions
+					edge [color=blue penwidth=2.0]
+				'''
+				)
+				while (transitions.hasNext) {
+					var transition = transitions.next
+					sb.append("\t")
+					sb.append(
+						'''
+						«cleanStateName(transition.source.name)» -> «cleanStateName(transition.target.name)» [label="«genAction(transition.action as StoreModifierActionOrReferenceToAction)»,«evalExpr(transition.rate) as int»"]
+						'''
+					)
+				}
+				sb.append("}\n")			
+			}
+
+			
+			return sb.toString
+		}
+		
+		
+		//Retrieve attributes relevant to given node(ID)
+		def getRelevantAttributes(String nodeID, Iterator<Attribute> attributes) {
+			var relevantAttributes = new ArrayList<Attribute>()
+			while (attributes.hasNext) {
+				var attribute = attributes.next
+				var attributeValues = attribute.values.iterator
+				var breakFlag = true
+				while (attributeValues.hasNext && breakFlag) {
+					var attributeValue = attributeValues.next
+					if ((getNodeName(attributeValue.attribute)).equals(nodeID)) {
+						relevantAttributes.add(attribute)
+						breakFlag = false
+					}
+				}
+			}
+			return relevantAttributes
+		}
+		
+		def getRelevantDRates(String nodeID, Iterator<AttackDetectionRateValue> detectionRates) {
+			var dRates = new ArrayList<AttackDetectionRateValue>()
+			while (detectionRates.hasNext) {
+				var dRateValue = detectionRates.next
+				if ((dRateValue.attackNode.name).equals(nodeID)) {
+					dRates.add(dRateValue)
+				}
+			}
+			
+			return dRates
+		}
+		
+		def getRelevantEffectivenessValues(String nodeID, Iterator<DefenseEffectivenessValues> effectivenessValues) {
+			var values = new ArrayList<DefenseEffectivenessValues>()
+			while (effectivenessValues.hasNext) {
+				var value = effectivenessValues.next
+				if ((getNodeName(value.defenseNode)).equals(nodeID)) {
+					values.add(value)
+				}
+			}
+			return values
+		}
+		
+		def genDefenseEffectivenessValues(String nodeID, ArrayList<DefenseEffectivenessValues> values) {
+			if (values.empty) {
+				return ""
+			}
+			var sb = new StringBuffer()
+			sb.append('''<tr><td><b>Defense Effectiveness</b></td></tr>''')
+			for (DefenseEffectivenessValues value : values) {
+				var valuesAttackers = value.defenseEffectivenessAttackers.attackers
+				var valuesNodes = value.attackNodes.nodes
+				
+				sb.append('''<tr><td>''')
+				
+				if (valuesAttackers.empty) {
+					sb.append('''ALL : ''')
+				} else {
+					if (valuesAttackers.length > 1) {
+						sb.append("(")
+						for (Attacker attacker : valuesAttackers) {
+								if (valuesAttackers.last == attacker) {
+								sb.append('''«attacker.name»''')
+							} else {
+								sb.append('''«attacker.name», ''')
+							}
+						}
+						sb.append(''') : ''')
+					} else {
+						sb.append('''«(valuesAttackers.get(0)).name» : ''')
+					}
+				}	
+				if (valuesNodes.empty) {
+					sb.append('''ALL = ''')
+				} else {
+					if (valuesNodes.length > 1) {
+						sb.append("(")
+						for (AttackNode attackNode : valuesNodes) {
+							if (valuesNodes.last == attackNode) {
+								sb.append('''«attackNode.name»''')
+							} else {
+								sb.append('''«attackNode.name», ''')
+							}
+						}
+						sb.append(''') = ''')
+					} else {
+						sb.append('''«(valuesNodes.get(0)).name» = ''')
+					}
+				}
+				sb.append('''«value.value.value»''')
+				sb.append('''</td></tr>''')
+			}
+			return sb.toString
+		}
+		
+		//Generate all relations
+		def genEdges(Iterator<EdgeType> edges) {
+			var sb = new StringBuffer()
+			var sbRanks = new StringBuffer()
+			var invisibleDOTNodeCounter = 0
+			sb.append(
+				'''
+				//Edges
+				rankdir = TB
+				edge [penwidth=2.0]
+				'''
+			)
+			while (edges.hasNext) {
+				var edge = edges.next
+				var parent = edge.parent
+				var children = getChildren(edge)
+				
+				switch (edge.eClass.name) {
+					case "ORRelation": {
+						for (child : children) {
+							sb.append('''«getNodeName(parent)» -> «getNodeName(child)»''')
+							if (parent.eClass != child.eClass) {
+								sb.append(''' [style="dashed" arrowhead="none" color="gray"]''')
+							} else {
+								sb.append(''' [arrowhead="none"]''')
+							}
+							sb.append("\n")
+						}
+						
+					}
+					case "ANDRelation": {
+						var invisibleDOTNodeStart = invisibleDOTNodeCounter
+						for (child : children) {
+							sb.append('''invisibleDOTNode«invisibleDOTNodeCounter» [shape=point style=invis label="" width=0.0 height=0.0]''')
+							sb.append("\n")
+							sb.append('''«getNodeName(parent)» -> invisibleDOTNode«invisibleDOTNodeCounter»''')
+							if (parent.eClass != child.eClass) {
+								sb.append(''' [style="dashed" arrowhead="none"]''')
+								sb.append("\n")
+								sb.append('''invisibleDOTNode«invisibleDOTNodeCounter» -> «getNodeName(child)» [style="dashed" arrowhead="none"]''')
+								sb.append("\n")
+							} else {
+								sb.append(''' [arrowhead="none" penwidth=2]''')
+								sb.append("\n")
+								sb.append('''invisibleDOTNode«invisibleDOTNodeCounter» -> «getNodeName(child)» [arrowhead="none" penwidth=2]''')
+								sb.append("\n")
+							}
+							invisibleDOTNodeCounter++
+						}
+						var invisibleDOTNodeEnd = invisibleDOTNodeCounter
+						for (var i = invisibleDOTNodeStart; i < invisibleDOTNodeEnd - 1; i++) {
+							sb.append('''invisibleDOTNode«i» -> invisibleDOTNode«i + 1» [arrowhead="none"]''')
+							sb.append("\n")
+						}
+						sbRanks.append('''{rank = same; ''')
+						for (var i = invisibleDOTNodeStart; i < invisibleDOTNodeEnd; i++) {
+							sbRanks.append('''invisibleDOTNode«i»;''')
+						}
+						sbRanks.append("}\n")
+						sbRanks.append('''{rank = same; ''')
+						for (child : children) {
+							sbRanks.append('''«getNodeName(child)»;''')
+						}
+						sbRanks.append("}\n")
+					}
+					case "OANDRelation": {
+						var invisibleDOTNodeStart = invisibleDOTNodeCounter
+						for (child : children) {
+							sb.append('''invisibleDOTNode«invisibleDOTNodeCounter» [shape=point style=invis label="" width=0.0 height=0.0]''')
+							sb.append("\n")
+							sb.append('''«getNodeName(parent)» -> invisibleDOTNode«invisibleDOTNodeCounter»''')
+							if (parent.eClass != child.eClass) {
+								sb.append(''' [style="dashed" arrowhead="none"]''')
+								sb.append("\n")
+								sb.append('''invisibleDOTNode«invisibleDOTNodeCounter» -> «getNodeName(child)» [style="dashed" arrowhead="none"]''')
+								sb.append("\n")
+							} else {
+								sb.append(''' [arrowhead="none" penwidth=2]''')
+								sb.append("\n")
+								sb.append('''invisibleDOTNode«invisibleDOTNodeCounter» -> «getNodeName(child)» [arrowhead="none" penwidth=2]''')
+								sb.append("\n")
+							}
+							invisibleDOTNodeCounter++
+							
+						}
+						var invisibleDOTNodeEnd = invisibleDOTNodeCounter
+						for (var i = invisibleDOTNodeStart; i < invisibleDOTNodeEnd - 1; i++) {
+							if (i == invisibleDOTNodeEnd - 2) {
+								sb.append('''invisibleDOTNode«i» -> invisibleDOTNode«i + 1» [arrowhead="vee"]''')
+							} else {
+								sb.append('''invisibleDOTNode«i» -> invisibleDOTNode«i + 1» [arrowhead="none"]''')
+							}
+							
+							sb.append("\n")
+						}
+						sbRanks.append('''{rank = same; ''')
+						for (var i = invisibleDOTNodeStart; i < invisibleDOTNodeEnd; i++) {
+							sbRanks.append('''invisibleDOTNode«i»;''')
+						}
+						sbRanks.append("}\n")
+						sbRanks.append('''{rank = same; ''')
+						for (child : children) {
+							sbRanks.append('''«getNodeName(child)»;''')
+						}
+						sbRanks.append("}\n")
+					}
+					case "KNRelation": {
+						//var invisibleDOTNodeStart = invisibleDOTNodeCounter
+						for (child : children) {
+							sb.append('''«getNodeName(parent)»-> «getNodeName(child)» [arrowhead="none" penwidth=2 label="«(edge as KNRelation).value»:«children.length»"]''')
+							sb.append("\n")	
+							/*
+							sb.append('''invisibleDOTNode«invisibleDOTNodeCounter» [shape=point style=invis label="" width=0.0 height=0.0]''')
+							sb.append("\n")
+							sb.append('''«getNodeName(parent)» -> invisibleDOTNode«invisibleDOTNodeCounter»''')
+							if (parent.eClass != child.eClass) {
+								sb.append(''' [style="dashed" arrowhead="none" ]''')
+								sb.append("\n")
+								sb.append('''invisibleDOTNode«invisibleDOTNodeCounter» -> «getNodeName(child)» [style="dashed" arrowhead="none" label="«(edge as KNRelation).value»:«children.length»"]''')
+								sb.append("\n")
+							} else {
+								sb.append(''' [arrowhead="none" penwidth=2]''')
+								sb.append("\n")
+								sb.append('''invisibleDOTNode«invisibleDOTNodeCounter» -> «getNodeName(child)» [arrowhead="none" penwidth=2 label="«(edge as KNRelation).value»:«children.length»"]''')
+								sb.append("\n")
+							}
+							invisibleDOTNodeCounter++
+							*/
+						}
+						/*
+						var invisibleDOTNodeEnd = invisibleDOTNodeCounter
+						for (var i = invisibleDOTNodeStart; i < invisibleDOTNodeEnd - 1; i++) {
+							sb.append('''invisibleDOTNode«i» -> invisibleDOTNode«i + 1» [arrowhead="none"]''')
+							sb.append("\n")
+						}
+						sbRanks.append('''{rank = same; ''')
+						for (var i = invisibleDOTNodeStart; i < invisibleDOTNodeEnd; i++) {
+							sbRanks.append('''invisibleDOTNode«i»;''')
+						}
+						sbRanks.append("}\n")
+						sbRanks.append('''{rank = same; ''')
+						for (child : children) {
+							sbRanks.append('''«getNodeName(child)»;''')
+						}
+						sbRanks.append("}\n")
+						*/
+					}
+					
+				}
+				
+				
+
+			}
+			sb.append(sbRanks.toString)
+			return sb.toString
+		}
+		
+		def genORRelation(ORRelation edge) {
+			var sb = new StringBuffer()
+			var parent = edge.parent
+			var children = edge.childrenSet.children
+			for (Node child : children) {
+				sb.append('''«getNodeName(parent)» -> «getNodeName(child)»''')
+				if (parent.eClass != child.eClass) {
+					sb.append(" [style=\"dashed\" arrowhead=\"none\"]")
+				} else {
+					sb.append(" [arrowhead=\"none\"]")
+				}
+				sb.append("\n")
+			}
+			return sb.toString
+		}
+		
+		def genANDRelation(ANDRelation edge) {
+			
+		}
+		
+		def genOANDRelation(OANDRelation edge) {
+			
+		}
+		
+		def genKNRelation(KNRelation edge) {
+			
+		}
+		
+		def getChildren(EdgeType edge) {
+			switch (edge.eClass.name) {
+				case "ORRelation": {
+					return (edge as ORRelation).childrenSet.children
+				}
+				case "ANDRelation": {
+					return (edge as ANDRelation).childrenSet.children
+				}
+				case "OANDRelation": {
+					return (edge as OANDRelation).childrenSeq.children
+				}
+				case "KNRelation": {
+					return (edge as KNRelation).childrenSet.children
+				}
+			}
+		}
+		
+
+		//Get SetOfChildren/SeqOfChildren
+		def getChildrenSet(Iterator<Node> children) {
+			var sb = new StringBuffer()
+			sb.append("{")
+			
+			var child = children.next
+			sb.append(getNodeName(child))
+			while (children.hasNext) {
+				child = children.next
+				sb.append(''' «getNodeName(child)»''')
+			}
+			sb.append("}")
+			return sb.toString
+		}
+		
+		//Generate attributes
+		def genAttributes(Iterator<Attribute> attributes) {
+			//var sb = new StringBuffer()
+		}
+		
+		def static double evalExpr(Expression expr) {
+		var rightVisited = 0.0
+		var leftVisited = 0.0
+		if(expr instanceof NumberLiteral){
+			return expr.value
+		}
+		else if(expr instanceof RefToVariable){
+			//return expr.varname.name
+			return 0.0
+		}
+		else if(expr instanceof Predicate){
+			//return expr.predicate.name
+			return 0.0
+		}
+		else if(expr instanceof Addition || expr instanceof AdditionWithPredicates){
+			if(expr instanceof Addition){
+				leftVisited = evalExpr(expr.left)
+				rightVisited = evalExpr(expr.right)
+			}
+			else if(expr instanceof AdditionWithPredicates){
+				leftVisited = evalExpr(expr.left)
+				rightVisited = evalExpr(expr.right)
+			}
+			//return '''«leftVisited» + «rightVisited»'''
+			return leftVisited + rightVisited
+		}
+		else if(expr instanceof Subtraction || expr instanceof SubtractionWithPredicates){
+			if(expr instanceof Subtraction){
+				leftVisited = evalExpr(expr.left)
+				rightVisited = evalExpr(expr.right)
+			}
+			else if(expr instanceof SubtractionWithPredicates){
+				leftVisited = evalExpr(expr.left)
+				rightVisited = evalExpr(expr.right)
+			}
+			//return '''«leftVisited» - «rightVisited»'''
+			return leftVisited - rightVisited
+		}
+		else if(expr instanceof Multiplication || expr instanceof MultiplicationWithPredicates){
+			if(expr instanceof Multiplication){
+				leftVisited = evalExpr(expr.left)
+				rightVisited = evalExpr(expr.right)
+			}
+			else if(expr instanceof MultiplicationWithPredicates){
+				leftVisited = evalExpr(expr.left)
+				rightVisited = evalExpr(expr.right)
+			}
+			//return '''«leftVisited» * «rightVisited»'''
+			return leftVisited * rightVisited
+		}
+		else if (expr instanceof Division) {
+			leftVisited = evalExpr(expr.left)
+			rightVisited = evalExpr(expr.right)
+			return leftVisited / rightVisited
+		}
+		else if (expr instanceof Power) {
+			leftVisited = evalExpr(expr.left)
+			rightVisited = evalExpr(expr.right)
+			return leftVisited ** rightVisited
+		}
+		else if(expr instanceof MinusPrimary || expr instanceof MinusPrimaryWithPredicates){
+			if(expr instanceof MinusPrimary){
+				leftVisited = evalExpr(expr.left)
+			}
+			else if(expr instanceof MinusPrimaryWithPredicates){
+				leftVisited = evalExpr(expr.left)
+			}
+			//return '''-«leftVisited»'''
+			return -leftVisited
+		}
+		else{
+			throw new UnsupportedOperationException("Unsupported expression: " + expr.toString());
+		}
+	}
+	
+	def static cleanActionName(String name){
+		var cleanedName = name
+		if(name.equalsIgnoreCase("tryAction") || name.equalsIgnoreCase("tryAct")){
+			cleanedName = "try"
+		}
+		return cleanedName
+	}
+	
+	def static genAction(StoreModifierActionOrReferenceToAction action) {
+			if(action instanceof Action){
+				return cleanActionName(action.name)
+			}
+			else if(action instanceof ReferenceToAction){
+				var referencedActionOrFeautre = action.value
+				if(referencedActionOrFeautre instanceof Action){
+					return cleanActionName(referencedActionOrFeautre.name)
+				}
+			}
+			else if(action instanceof StoreModifierActions){
+				if(action instanceof AddAction){
+					return '''add(«action.node.nodeName»)'''
+				}
+				else if(action instanceof RemoveAction){
+					return '''remove(«action.node.nodeName»)'''
+				}
+				else if(action instanceof FailAction){
+					return '''fail(«action.node.nodeName»)'''
+				}
+				else if(action instanceof QueryAction){
+					return '''query(«action.node.nodeName»)'''
+				}
+				else{
+					throw new UnsupportedOperationException("Unsupported action: " + action);
+				}
+			}
+		}
+
+		
+
 	
 
 		

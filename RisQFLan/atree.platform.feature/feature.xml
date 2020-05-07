@@ -208,13 +208,6 @@ OS-INDEPENDENT DEPENDENCIES FOR DEPLOYMENT
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.core.jobs"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.core.net"
          download-size="0"
          install-size="0"
@@ -1560,5 +1553,12 @@ OS-INDEPENDENT DEPENDENCIES FOR DEPLOYMENT
          download-size="0"
          install-size="0"
          version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.core.jobs"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
