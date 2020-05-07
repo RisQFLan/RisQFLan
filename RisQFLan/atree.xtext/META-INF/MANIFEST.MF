@@ -27,3 +27,5 @@ Export-Package: atree.xtext.bbt.util,
  atree.xtext.bbt.impl,
  atree.xtext.validation
 Import-Package: org.apache.log4j
+Bundle-ClassPath: .,
+ lib/graphviz-java.jar

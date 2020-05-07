@@ -1,6 +1,9 @@
 package atree.xtext;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,9 +13,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.URIConverter;
 
 import atree.xtext.bbt.*;
 import atree.xtext.generator.BbtGenerator;
+import guru.nidi.graphviz.engine.Format;
+import guru.nidi.graphviz.engine.Graphviz;
+import guru.nidi.graphviz.model.MutableGraph;
+import guru.nidi.graphviz.parse.Parser;
+
 
 /**
  * 
@@ -650,5 +661,107 @@ public class MyParserUtil {
 			sb.append("}");
 			return sb.toString();
 		}
+
+	public static void generateFigure(InputStream dot, String fileName, Resource resource) throws IOException {
+		URI rur = resource.getURI();
+		URI figure = rur.trimFileExtension();
+		figure = figure.trimSegments(figure.segmentCount()-2);
+		figure =figure.appendSegment(fileName);
+		//figure =figure.appendFileExtension("svg");
+		figure =figure.appendFileExtension("png");
+		
+		URIConverter uc = resource.getResourceSet().getURIConverter();
+		OutputStream os = uc.createOutputStream(figure);
+		MutableGraph loadedDot = new Parser().read(dot);
+		//Graphviz.fromGraph(loadedDot).width(700).render(Format.SVG).toOutputStream(os);
+		//Graphviz.fromGraph(loadedDot).render(Format.SVG).toOutputStream(os);
+		Graphviz.fromGraph(loadedDot).render(Format.PNG).toOutputStream(os);
+		os.close();
+		dot.close();
+		
+		//throw new UnsupportedOperationException("TODO: auto-generated method stub");
+//		try {
+//			TestGraphvizJava.main(null);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		//System.out.println("Hello World!");
+        /*
+		
+        MutableGraph g = mutGraph("example1").setDirected(true).add(
+                mutNode("a").add(Color.RED).addLink(mutNode("b")));
+        try {
+			Graphviz.fromGraph(g).width(200).render(Format.PNG).toFile(new File("example/ex1m.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        System.out.println("Completed g1");
+        */
+
+		//App.main(null);
+		/*
+		GraphParser parser = new GraphParser(dot);
+		Map<String, GraphNode> nodes = parser.getNodes();
+		Map<String, GraphEdge> edges = parser.getEdges();	
+
+		System.out.println("--- nodes:");
+		for (GraphNode node : nodes.values()) {
+			System.out.println(node.getId() + " " + node.getAttributes());
+		}
+
+		System.out.println("--- edges:");
+		for (GraphEdge edge : edges.values()) {
+			System.out.println(edge.getNode1().getId() + "->" + edge.getNode2().getId() + " " + edge.getAttributes());
+		}
+		*/
+		
+		
+//		String rurp = rur.path();
+//		String rurpd = rur.devicePath();
+//		String rurh = rur.host();
+//		String rurfs =rur.toFileString();
+//		String rurpst = rur.toPlatformString(true);
+//		String rurpsf = rur.toPlatformString(true);
+//		String s = URI.decode(fileName);
+//		
+		
+		
+		
+			/*	var figure = rur.trimFileExtension.appendFileExtension('png')//tree
+				//var fileFigure = new File
+				fsa.generateFile(fileName, AttackTree)
+				
+				var a = resource.URI.trimFileExtension.toPlatformString(true) 
+				var fi = new File(modelName+"Tree.png");
+				var ur =fi.toURI
+				var uc = resource.resourceSet.URIConverter;
+				//var fs =uc.normalize(ur);
+				//uc.normalize(resource.URI.trimFileExtension.appendFileExtension('gen')).toFileString
+				//var ur2 = resource.resourceSet.UriConverter.normalize( resource.URI.trimFileExtension.appendFileExtension('gen') ).toFileString
+*/
+//		try {
+//			//dot.reset();
+//			
+//			Graphviz.fromGraph(g3).width(700).render(Format.PNG).toFile(new File("/Users/andrea/Desktop/"+fileName+".png"));
+//			Graphviz.fromGraph(g3).width(700).render(Format.PNG).toOutputStream(os);
+///*
+//			g3.graphAttrs()
+//			.add(Color.WHITE.gradient(Color.rgb("888888")).background().angle(90))
+//			.nodeAttrs().add(Color.WHITE.fill())
+//			.nodes().forEach(node ->
+//			node.add(
+//					Color.named(node.name().toString()),
+//					Style.lineWidth(4).and(Style.FILLED)));
+//			Graphviz.fromGraph(g3).render(Format.PNG).toFile(new File("example/ex4-2.png"));
+//			System.out.println("Completed g3");
+//			Graphviz.fromGraph(g3).width(700).render(Format.PNG).toFile(new File("example/ex4-3.png"));
+//			System.out.println("Completed g4");*/
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+	}
 	
 }

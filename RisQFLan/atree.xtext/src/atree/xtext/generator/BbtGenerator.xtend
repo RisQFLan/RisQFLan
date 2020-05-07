@@ -79,6 +79,7 @@ import atree.xtext.bbt.ProcessState
 import atree.xtext.bbt.ProcessTransition
 import atree.xtext.bbt.Division
 import atree.xtext.bbt.Power
+import org.eclipse.xtext.util.StringInputStream
 
 /**
  * Generates code from your model files on save.
@@ -274,7 +275,9 @@ for(e : modelDef.elements){
 
 	}
 	'''
-	fsa.generateFile(modelName + 'Tree.dot', AttackTree)
+	var fileName =modelName + 'Tree.dot'
+	fsa.generateFile(fileName, AttackTree)
+	MyParserUtil.generateFigure(new StringInputStream(AttackTree),modelName + 'Tree',resource)
 	
 	var AttackDiagram=
 	'''
@@ -286,8 +289,9 @@ for(e : modelDef.elements){
 		«genStates(attackDiagramsList.iterator)»
 	}
 	'''
-	fsa.generateFile(modelName + 'Attacker.dot', AttackDiagram)
-	
+	fileName=modelName + 'Attacker.dot';
+	fsa.generateFile(fileName, AttackDiagram)
+	MyParserUtil.generateFigure(new StringInputStream(AttackDiagram),modelName + 'Attacker',resource)
 	}
 		
 		def writeInitialAttacks(List<InitialAttack> initAttacks) {
