@@ -1,0 +1,13 @@
+digraph {
+0 [operator="BE",name="1",distribution="Attacker",cost="79.0",probability="0.4166666666666667"];
+1 [operator="BE",name="1",distribution="Attacker",cost="79.0",probability="0.4166666666666667"];
+2 [operator="OR",sink="Attacker"];
+3 [operator="AND"];
+4 [operator="BE",name="4",distribution="Attacker",cost="42.0",probability="0.3770491803278688"];
+
+
+0->2;
+1->3;
+3->2;
+4->3;
+}

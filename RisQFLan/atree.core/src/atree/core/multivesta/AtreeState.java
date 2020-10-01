@@ -81,6 +81,7 @@ public class AtreeState extends NewState {
 		
 		//root = new File("/models/abc/d-e");//new File("/Users/andrea/Dropbox/runtime-EclipseApplication/qflan2/src-gen");//new File("/models/abc");//new File("/models"); // On Windows running on C:\, this is C:\java.
 		//root = new File("/Users/andrea/Dropbox/runtime-EclipseApplication/qflan2/src-gen");
+				
 		String rootName = modelAbsolutePath.substring(0,modelAbsolutePath.lastIndexOf(File.separator));
 		rootName = rootName + File.separator + "src-gen";
 		root = new File(rootName);
@@ -121,7 +122,6 @@ public class AtreeState extends NewState {
 		} 
 		return modelBuilder;
 	}
-
 
 	@Override
 	public void setSimulatorForNewSimulation(int randomSeed) {
