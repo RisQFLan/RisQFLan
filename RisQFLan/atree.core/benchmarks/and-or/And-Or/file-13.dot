@@ -1,9 +1,0 @@
-digraph {
-0 [operator="BE",name="6",distribution="Attacker",cost="91.0",probability="0.43478260869565216"];
-1 [operator="AND",sink="Attacker"];
-2 [operator="BE",name="1",distribution="Attacker",cost="79.0",probability="0.4166666666666667"];
-
-
-0->1;
-2->1;
-}

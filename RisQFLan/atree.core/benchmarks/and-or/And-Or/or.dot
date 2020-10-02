@@ -1,9 +1,0 @@
-digraph ADG {
-1 [operator="BE",name="findSubject",distribution="attacker",cost="2",probability="1"];
-2 [operator="BE",name="installKeylogger",distribution="attacker",cost="4",probability="0.5"];
-
-7 [operator="OR",sink="attacker"];
-
-1->7;
-2->7;
-}
