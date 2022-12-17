@@ -6,10 +6,10 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="org.eclipse.ui.ide.workbench"
-            name="BADGraph">
+            name="RisQFLan">
          <property
                name="appName"
-               value="BADGraph">
+               value="RisQFLan">
          </property>
          <property
                name="aboutImage"
@@ -17,7 +17,7 @@
          </property>
          <property
                name="aboutText"
-               value="BADGraph: Quantitative Modeling and Analysis of Probabilistic Attack Scenarios">
+               value="RisQFLan: A Software Engineering Approach to Quantitative Security Risk Modeling and Analysis using QFLan">
          </property>
          <property
                name="windowImages"

@@ -42,3 +42,5 @@ RisQFLan/distr/linux/linux.gtk.x86_64/
 RisQFLan/atree.core/javaCompiler.core.jar.args
 RisQFLan/atree.core/temp.folder/core.jar.bin.log
 RisQFLan/atree.product.macosx/javaCompiler...args
+RisQFLan/atree.core/.settings/org.eclipse.core.resources.prefs
+RisQFLan/atree.xtext/.settings/org.eclipse.core.resources.prefs
