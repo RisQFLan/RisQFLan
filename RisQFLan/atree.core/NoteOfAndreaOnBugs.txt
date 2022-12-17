@@ -1,0 +1,22 @@
+ROLE-CHANGING ATTACK NODES DO NOT PREVENT THE ACTIVATION OF A COUNTERMEASURE
+	I discovered this when working on the RobBank model for the FASE tool.
+		The problem is in AtreeModel.apply()
+	I fixed the problem of adding a countermeasure if you already have an attack node added
+	I don't know if 'deactivate a countermeasure if a role-changing attack node gets activated' works 	 
+
+THE ACTION FAIL
+
+FIXED
+
+I did not mention here other important fixes 	
+
+Ricorda: fail(attack1) risulta 'vietata' se l'aggiunta di attack1 non e' permessa dai vincoli.
+	I changed it in RemoveAction.allowedByOtherConstraints. We now allow it
+	However, we do not allow it if we already have the node installed. As dictated by the semantics. Is this reasonable?
+
+THE ACTION REMOVE
+At the moment, we don't check if by removing a node we break the hierarchical constraints.
+	This is wrong. I fixed it	
+	
+There was the use of MATH.RANDOM() in deciding whether or not to activate countermeasures in case of detectable add(attacknode)
+	I correctly replaced it with randomEngine, intialized with a seed by multivesta	

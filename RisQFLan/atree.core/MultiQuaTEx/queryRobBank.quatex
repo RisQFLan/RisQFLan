@@ -1,0 +1,6 @@
+obs1AtStep(numberOfStep) =
+ if { s.rval("steps") >= numberOfStep }
+	then { s.rval("steps") }
+	else # obs1AtStep({numberOfStep})
+ fi ;
+eval parametric(E[ obs1AtStep(x) ], x,1,1,5) ;
