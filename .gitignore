@@ -44,3 +44,6 @@ RisQFLan/atree.core/temp.folder/core.jar.bin.log
 RisQFLan/atree.product.macosx/javaCompiler...args
 RisQFLan/atree.core/.settings/org.eclipse.core.resources.prefs
 RisQFLan/atree.xtext/.settings/org.eclipse.core.resources.prefs
+.DS_Store
+runtime-RisQFLan.product/.metadata/.lock
+runtime-RisQFLan.product/.metadata/.log
