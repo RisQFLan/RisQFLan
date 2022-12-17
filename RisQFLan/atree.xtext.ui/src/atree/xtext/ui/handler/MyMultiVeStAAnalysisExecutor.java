@@ -73,8 +73,9 @@ public class MyMultiVeStAAnalysisExecutor {
 	protected static String jarPath="";
 	private static final String libraryFileName="multivestaRisQFLan.jar";
 	public static final String FILEWITHLIBRARYFILELOCATION="pathOfMultivestaRisQFLan.txt";
-	public static final String LinkMultiVeStaRisQFLan = 
-		  "http://bit.ly/mv_risqflan_jar";//"https://bit.ly/mvrisqflan";//"https://drive.google.com/u/0/uc?id=1tbQmmzCkltHrWimUbhfj17qlESnSUGxI&export=download";
+	public static final String LinkMultiVeStaRisQFLan =
+			"https://github.com/RisQFLan/RisQFLan/raw/master/RisQFLan/distr/multivestaRisQFLan.jar";
+		  //"http://bit.ly/mv_risqflan_jar";//"https://bit.ly/mvrisqflan";//"https://drive.google.com/u/0/uc?id=1tbQmmzCkltHrWimUbhfj17qlESnSUGxI&export=download";
 		//"https://drive.google.com/file/d/1tbQmmzCkltHrWimUbhfj17qlESnSUGxI/view?usp=sharing&export=download"; 
 	    //"https://drive.google.com/uc?id=1xdcDrNsTilNy3bxjfd1KLbGDwAX0Wv4f&export=download"; //"https://dtudk-my.sharepoint.com/:u:/g/personal/anvan_win_dtu_dk/EfGDAwGVX81Fi-UcetisBVABq5F7Sne7dbHLI546lpRCtQ?e=Ly1Mxc"; //"https://www.dropbox.com/s/yj46t7c9urq8n2q/multivestaQFLan.jar?dl=1";
 	private static final int IR = 10; 
