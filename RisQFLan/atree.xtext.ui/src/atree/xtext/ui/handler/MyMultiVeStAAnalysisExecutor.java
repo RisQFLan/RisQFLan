@@ -101,9 +101,11 @@ public class MyMultiVeStAAnalysisExecutor {
 
 		String newJarPath=modelDef.getJarPath();
 		if(newJarPath!=null) {
-			String jar = MyParserUtil.computeFileName(newJarPath, absoluteParentPath);
-			setNewJar(jar);
+			if(newJarPath.length()>0)
+			newJarPath = MyParserUtil.computeFileName(newJarPath, absoluteParentPath);
+			setNewJar(newJarPath);
 		}
+		
 		
 		
 		
@@ -114,6 +116,7 @@ public class MyMultiVeStAAnalysisExecutor {
 				NewVesta.printStackTrace(consoleOut,e);
 			}
 		}
+		
 
 		//	     URI projectURI = project.getLocationURI();
 		//	     String projectPath=projectURI.getPath();
