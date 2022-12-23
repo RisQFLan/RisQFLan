@@ -75,3 +75,11 @@ runtime-RisQFLan.product/.metadata/.plugins/org.eclipse.ui.ide/dialog_settings.x
 runtime-RisQFLan.product/.metadata/.plugins/org.eclipse.ui.workbench/workingsets.xml
 runtime-RisQFLan.product/.metadata/.plugins/org.eclipse.xtext.builder/builder.state
 .DS_Store
+RisQFLan/matheval/bin/matheval/MathEval$ArgParser.class
+RisQFLan/matheval/bin/matheval/MathEval$DefaultImpl.class
+RisQFLan/matheval/bin/matheval/MathEval$FunctionHandler.class
+RisQFLan/matheval/bin/matheval/MathEval$Operator.class
+RisQFLan/matheval/bin/matheval/MathEval$OperatorHandler.class
+RisQFLan/matheval/bin/matheval/MathEval.class
+RisQFLan/matheval/bin/matheval/Test.class
+RisQFLan/matheval/.settings/org.eclipse.jdt.core.prefs

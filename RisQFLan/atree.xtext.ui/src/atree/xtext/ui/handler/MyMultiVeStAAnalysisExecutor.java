@@ -59,6 +59,7 @@ import atree.xtext.bbt.Attribute;
 import atree.xtext.ui.MyConsoleUtil;
 import atree.xtext.ui.perspective.dialogs.MessageDialogShower;
 import atree.xtext.ui.perspective.plot.GUIDataOutputHandler;
+import matheval.MathEval;
 import vesta.NewVesta;
 import vesta.mc.InfoMultiQuery;
 

@@ -9,5 +9,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="lib" path="lib/graphviz-java.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/multivesta.jar" sourcepath="/multivestaPluginProject"/>
+	<classpathentry exported="true" kind="lib" path="lib/matheval.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
