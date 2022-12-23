@@ -124,19 +124,19 @@ public class MyMultiVeStAAnalysisExecutor {
 
 		String projectPath = project.getLocation().toString().replace("/", File.separator);
 		projectPath=cleanWindowsPath(projectPath);
-		NewVesta.println(consoleOut,"after clean windows");
+		//NewVesta.println(consoleOut,"after clean windows");
 
 		GUIDataOutputHandler guidog = new GUIDataOutputHandler(console);
-		NewVesta.println(consoleOut,"after guidog");
+		//NewVesta.println(consoleOut,"after guidog");
 
 
 		String name = modelDef.getName();
-		NewVesta.println(consoleOut,"name="+name);
+		//NewVesta.println(consoleOut,"name="+name);
 		String firstChar = name.substring(0, 1);
 		name = name.substring(1,name.length());
 		name = firstChar.toUpperCase()+name;
 		String fileAbsPath = projectPath+File.separator+name+".bbt";
-		NewVesta.println(consoleOut,"fileAbsPath="+fileAbsPath);
+		//NewVesta.println(consoleOut,"fileAbsPath="+fileAbsPath);
 
 		/*
 		try {
@@ -151,7 +151,7 @@ public class MyMultiVeStAAnalysisExecutor {
 		*/
 		
 
-		NewVesta.println(consoleOut,"before for element");
+		//NewVesta.println(consoleOut,"before for element");
 		Analysis analysis = null;
 		Simulate simulate = null;
 		ExportDTMC exportDTMC=null;
@@ -178,7 +178,7 @@ public class MyMultiVeStAAnalysisExecutor {
 			} 
 		}
 
-		NewVesta.println(consoleOut,"before populatemodel");
+		//NewVesta.println(consoleOut,"before populatemodel");
 
 		//DataFromPopulateModel data = new DataFromPopulateModel();
 		ArrayList<IConstraint> labelsDTMCGuard= new ArrayList<>();
@@ -186,7 +186,7 @@ public class MyMultiVeStAAnalysisExecutor {
 
 		//AtreeModel clone = model.clone();
 		
-		NewVesta.println(consoleOut,"before checksat");
+		//NewVesta.println(consoleOut,"before checksat");
 		IConstraint unsat = model.checkSATCurrentState();
 		if(unsat!=null){
 			IMessageDialogShower msgVisualizer = new MessageDialogShower(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
@@ -195,7 +195,7 @@ public class MyMultiVeStAAnalysisExecutor {
 			msgVisualizer.openSimpleDialog(msg);//, DialogType.Error);
 			return;
 		}
-		NewVesta.println(consoleOut,"after checksat");
+		//NewVesta.println(consoleOut,"after checksat");
 
 
 		String logFile=null;
@@ -222,9 +222,9 @@ public class MyMultiVeStAAnalysisExecutor {
 				sb.replace(sb.length()-1, sb.length(), "]");
 				delta=sb.toString();
 			}
-			//TODO: FIX paths seperators around drive specification
+			
 			String query = MyParserUtil.computeFileName(queryFile, absoluteParentPath);
-			NewVesta.println(consoleOut,"after computefilename query");
+			//NewVesta.println(consoleOut,"after computefilename query");
 
 			if(analysis.getLogFile()!=null) {
 				logFile = MyParserUtil.computeFileName(analysis.getLogFile(), absoluteParentPath);
@@ -258,7 +258,7 @@ public class MyMultiVeStAAnalysisExecutor {
 				ir=0;
 			}
 
-			NewVesta.println(consoleOut,"before worker");
+			//NewVesta.println(consoleOut,"before worker");
 			if(multithreaded){
 				MyMultiVeStAAnalysisExecutorWorker worker = new MyMultiVeStAAnalysisExecutorWorker(model,query,alpha,delta,parallelismOrServers,ir,guidog,consoleOut,project,fileAbsPath,getJarPath(),projectPath+File.separator,blockSize,logFile);
 				worker.start();
@@ -875,7 +875,7 @@ public class MyMultiVeStAAnalysisExecutor {
 	}
 
 	private void checkLibraries(MessageConsoleStream out) throws IOException {
-		NewVesta.println(out,"Checking libraries...");
+		//NewVesta.println(out,"Checking libraries...");
 		
 		
 		String osName = System.getProperty("os.name");
@@ -885,7 +885,7 @@ public class MyMultiVeStAAnalysisExecutor {
 		if(osName.contains("Linux")){
 			lin=true;
 		}
-		NewVesta.println(out,"linux "+lin);
+		//NewVesta.println(out,"linux "+lin);
 //		if(osName.contains("Windows")||osName.contains("Linux")||osName.contains("Mac")){
 //			if(osName.contains("Windows")){
 //				win=true;
