@@ -10,6 +10,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Bbt.ecore#//Model/modelDefinitions"/>
     </genClasses>
     <genClasses ecoreClass="Bbt.ecore#//ModelDefinition">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Bbt.ecore#//ModelDefinition/jarPath"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Bbt.ecore#//ModelDefinition/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Bbt.ecore#//ModelDefinition/elements"/>
     </genClasses>

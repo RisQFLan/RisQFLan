@@ -19,17 +19,19 @@ public class TestLoadModel {
 			//s = new AtreeState(new ParametersForState("/Users/anvan/OneDrive/OneDrive - Danmarks Tekniske Universitet/TOOLS/RisQFLan/GBarRepository/runtime-RisQFLan.product/models/Pino.bbt", ""));
 			//s = new AtreeState(new ParametersForState("/Users/anvan/OneDrive/OneDrive - Danmarks Tekniske Universitet/TOOLS/RisQFLan/GBarRepository/runtime-RisQFLan.product/models/Piero.bbt", ""));
 			//s = new AtreeState(new ParametersForState("/Users/andrea/OneDrive - Danmarks Tekniske Universitet/TOOLSSecurity/RisQFLan/GBarRepository/runtime-RisQFLan.product/modelsPaper/CatBurglarDebug.bbt", ""));
-			s = new AtreeState(new ParametersForState("/Users/andrea/OneDrive - Danmarks Tekniske Universitet/TOOLSSecurity/RisQFLan/runtime-RisQFLan.product/modelsMainPaper/OpenSafe.bbt", ""));
+			//s = new AtreeState(new ParametersForState("/Users/andrea/OneDrive - Danmarks Tekniske Universitet/TOOLSSecurity/RisQFLan/runtime-RisQFLan.product/modelsMainPaper/OpenSafe.bbt", ""));
+			s = new AtreeState(new ParametersForState("/Users/andrea/Library/CloudStorage/OneDrive-ScuolaSuperioreSant'Anna/runtimes/runtime-RisQFLan.product/modelsToolPaper/OpenSafe.bbt", "-logFile ciao.csv"));
+			
 		}
 		
 		
-		int numberOfSimulations = 1;
-		int numberOfSimulationSteps = 20;
+		int numberOfSimulations = 4;
+		int numberOfSimulationSteps = 3;
 		
 		for(int i=0; i < numberOfSimulations; i++)
 		{
 			System.out.println("\n");
-			s.setSimulatorForNewSimulation(i);
+			s.setSimulatorForNewSimulation(i+10);
 //			while(s.rval("STEPS")<=10)
 			for(int j=0; j<numberOfSimulationSteps; j++)
 			{
@@ -38,7 +40,8 @@ public class TestLoadModel {
 				System.out.println("current state: "+s.getModel().getCurrentState().getName());
 				System.out.println("Number of transitions: "+s.getModel().getCurrentState().getTransitions().size());
 //				System.out.println(s.getModel().getCurrentState().getTransitions().iterator().next().isAllowed(s.getModel()));
-				s.performOneStepOfSimulation();
+				//s.performOneStepOfSimulation();
+				s.next();
 				//System.out.println(s.rval("Noticeability"));
 				System.out.println(s.rval("LearnPIN"));
 //				s.next();

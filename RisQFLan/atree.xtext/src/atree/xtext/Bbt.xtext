@@ -8,6 +8,7 @@ Model:
 	modelDefinitions = ModelDefinition;
 	
 ModelDefinition:
+	('update' 'jar' 'path' '=' jarPath=STRING)?
 	'begin' 'model' name = ID
 		(
 			//Variables

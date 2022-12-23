@@ -4,8 +4,8 @@ Bundle-Name: Core
 Bundle-SymbolicName: atree.core
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: core.jar,
- lib/multivesta.jar,
- lib/graphviz-java.jar
+ lib/graphviz-java.jar,
+ lib/multivesta.jar
 Export-Package: .,
  atree.core.attacker,
  atree.core.attributes,

@@ -99,6 +99,14 @@ public class MyMultiVeStAAnalysisExecutor {
 		String parentPath = fullPathOfParent.toFile().getPath();
 		String absoluteParentPath = workspacePath+parentPath;
 
+		String newJarPath=modelDef.getJarPath();
+		if(newJarPath!=null) {
+			String jar = MyParserUtil.computeFileName(newJarPath, absoluteParentPath);
+			setNewJar(jar);
+		}
+		
+		
+		
 		while(!librariesPresent){
 			try {
 				checkLibraries(consoleOut);
@@ -847,6 +855,9 @@ public class MyMultiVeStAAnalysisExecutor {
 		}
 	}
 
+	private void setNewJar(String pathToJar) {
+		MessageDialogShower.updateJarFileLocation(pathToJar);
+	}
 
 	private void checkLibraries(MessageConsoleStream out) throws IOException {
 

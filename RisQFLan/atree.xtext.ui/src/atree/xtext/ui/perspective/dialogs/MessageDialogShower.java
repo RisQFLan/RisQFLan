@@ -21,6 +21,28 @@ public class MessageDialogShower implements atree.core.dialogs.IMessageDialogSho
 		this.parentShell=parentShell;
 	}
 	
+	public static void updateJarFileLocation(String jarFileLocation) {
+		BufferedWriter bw=null;
+		try {
+			bw = new BufferedWriter(new FileWriter(new File(MyMultiVeStAAnalysisExecutor.FILEWITHLIBRARYFILELOCATION)));
+			bw.write(jarFileLocation+"\n");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			if(bw!=null){
+				try {
+					bw.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		}
+	}
+	
 	@Override
 	//public void showMessage(String message, String optionsLabel, ArrayList<String> options){
 	public void openMissingQFLanCoreLibraryDialog(String link, String linkShort/*, ArrayList<String> paths,String OS*/,boolean linux){
@@ -32,25 +54,7 @@ public class MessageDialogShower implements atree.core.dialogs.IMessageDialogSho
 				MissingAtreeCoreJarDialog dialog = new MissingAtreeCoreJarDialog(parentShell,link,linkShort/*, paths,OS*/,linux);
 				dialog.open();
 				//System.out.println("The jar is in: "+dialog.getJarFileLocation());
-				BufferedWriter bw=null;
-				try {
-					bw = new BufferedWriter(new FileWriter(new File(MyMultiVeStAAnalysisExecutor.FILEWITHLIBRARYFILELOCATION)));
-					bw.write(dialog.getJarFileLocation()+"\n");
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				finally{
-					if(bw!=null){
-						try {
-							bw.close();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					
-				}
+				updateJarFileLocation(dialog.getJarFileLocation());
 				
 			}
 		});

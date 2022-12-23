@@ -53,6 +53,8 @@ public class AtreeState extends NewState {
 	
 	private RandomEngineFacilities randomGenerator;
 	
+	private LinkedHashMap<String, String> latestCaptionToValue;
+	
 	public SimulationStateInformation getStateInfo() {
 		return stateInfo;
 	}
@@ -172,16 +174,42 @@ public class AtreeState extends NewState {
 	}
 
 	@Override
-	public void setSimulatorForNewSimulation(int randomSeed) {
+	public void setSimulatorForNewSimulation(int randomSeed) {		
+
+		//BEGIN: not really necessary for MV. Necessary for debugging-simulations
+		setCurrentSeed(randomSeed);
+		this.setLastStateAlreadyComputed(false);
+		this.setNumberOfSteps(0);
+		//END
+		
+		
 		loadedModel.resetToInitialState();
 		
-		randomGenerator = new RandomEngineFacilities(new MersenneTwister(this.getCurrentSeed()));		
-		loadedModel.setRandomSeed(randomSeed);
+		randomGenerator = new RandomEngineFacilities(new MersenneTwister(getCurrentSeed()));		
+		loadedModel.setRandomSeed(getCurrentSeed());
 		
+		addLogRow();
+	}
+
+	private void addLogRow() {
 		if(toLog) {
 			LinkedHashMap<String, String> captionToValue = defaultLogInfo(true);
 			captionToValue.put("activity", "reset");
 			addRowToLog(captionToValue);
+		}
+	}
+
+	
+	@Override
+	public void noMoreStepsNecessary() {
+		super.noMoreStepsNecessary();
+		addSimulationTerminatedToLog();
+	}
+	private void addSimulationTerminatedToLog() {
+		if(toLog && latestCaptionToValue!=null) {
+			latestCaptionToValue.put("activity", "simulationTerminated");
+			addRowToLog(latestCaptionToValue);
+			latestCaptionToValue=null;
 		}
 	}
 
@@ -243,6 +271,8 @@ public class AtreeState extends NewState {
 		}
 		
 		//activity is add outside
+		
+		latestCaptionToValue=captionToValue;
 		
 		return captionToValue;
 	}
