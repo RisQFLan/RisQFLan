@@ -290,7 +290,7 @@ for(e : modelDef.elements){
  * https://edotor.net/
  */
 	digraph «modelName» {
-		«genStates(attackDiagramsList.iterator)»
+		«genStates(attackDiagramsList.iterator,initialAttacks)»
 	}
 	'''
 	fileName=modelName + 'Attacker.dot';
@@ -1082,11 +1082,59 @@ AtreeVariable «variable.name» = model.addVariable("«variable.name»", «write
 			return cleanedName
 		}
 		
-		def genStates(Iterator<AttacksOfDiagram> attackDiagrams) {
+//		def genStates(Iterator<AttacksOfDiagram> attackDiagrams) {
+//			var sb = new StringBuffer()
+//			while (attackDiagrams.hasNext) {
+//				var diagram = attackDiagrams.next
+//				var states = diagram.eAllContents.filter(typeof(ProcessState))
+//				sb.append(
+//				'''
+//				subgraph «diagram.attacker.name» {
+//					//States
+//					node [shape=box style=rounded color=blue penwidth=4.0]
+//				'''
+//				)
+//				while (states.hasNext) {
+//					var state = states.next
+//					sb.append("\t")
+//					sb.append(
+//					'''
+//					«cleanStateName(state.name)»
+//					''')
+//				}
+//			
+//				var transitions = diagram.eAllContents.filter(typeof(ProcessTransition))
+//				sb.append("\t")
+//				sb.append(
+//				'''
+//				//Transitions
+//					edge [color=blue penwidth=2.0]
+//				'''
+//				)
+//				while (transitions.hasNext) {
+//					var transition = transitions.next
+//					sb.append("\t")
+//					sb.append(
+//						'''
+//						«cleanStateName(transition.source.name)» -> «cleanStateName(transition.target.name)» [label="«genAction(transition.action as StoreModifierActionOrReferenceToAction)»,«evalExpr(transition.rate) as double»"]
+//						'''
+//					)
+//				}
+//				sb.append("}\n")			
+//			}
+//
+//			
+//			return sb.toString
+//		}
+
+
+def genStates(Iterator<AttacksOfDiagram> attackDiagrams,List<InitialAttack> initialAttacks) {
 			var sb = new StringBuffer()
+			var attacker=initialAttacks.get(0).attacker
 			while (attackDiagrams.hasNext) {
 				var diagram = attackDiagrams.next
-				var states = diagram.eAllContents.filter(typeof(ProcessState))
+				if(diagram.attacker.name==attacker.name){
+					var states = diagram.eAllContents.filter(typeof(ProcessState))
 				sb.append(
 				'''
 				subgraph «diagram.attacker.name» {
@@ -1120,12 +1168,64 @@ AtreeVariable «variable.name» = model.addVariable("«variable.name»", «write
 						'''
 					)
 				}
-				sb.append("}\n")			
+				sb.append("}\n")	
+				}
+				else{
+					//do nothing	
+				}
 			}
 
 			
 			return sb.toString
 		}
+
+//def genStates(List<InitialAttack> initialAttacks) {
+//			var sb = new StringBuffer()			
+//			initialAttacks.get(0).attacker.eContainer.
+//			var states =initialAttacks.get(0).attacker.eAllContents.filter(typeof(ProcessState))
+//			var attacker=initialAttacks.get(0).attacker
+//			//while (attackDiagrams.hasNext) {
+//				//var diagram = attackDiagrams.next
+//				//var states = diagram.eAllContents.filter(typeof(ProcessState))
+//				sb.append(
+//				'''
+//				subgraph «attacker.name» {
+//					//States
+//					node [shape=box style=rounded color=blue penwidth=4.0]
+//				'''
+//				)
+//				while (states.hasNext) {
+//					var state = states.next
+//					sb.append("\t")
+//					sb.append(
+//					'''
+//					«cleanStateName(state.name)»
+//					''')
+//				//}
+//			
+//				var transitions = initialAttacks.get(0).eAllContents.filter(typeof(ProcessTransition))
+//				sb.append("\t")
+//				sb.append(
+//				'''
+//				//Transitions
+//					edge [color=blue penwidth=2.0]
+//				'''
+//				)
+//				while (transitions.hasNext) {
+//					var transition = transitions.next
+//					sb.append("\t")
+//					sb.append(
+//						'''
+//						«cleanStateName(transition.source.name)» -> «cleanStateName(transition.target.name)» [label="«genAction(transition.action as StoreModifierActionOrReferenceToAction)»,«evalExpr(transition.rate) as double»"]
+//						'''
+//					)
+//				}
+//				sb.append("}\n")			
+//			}
+//
+//			
+//			return sb.toString
+//		}
 		
 		
 		//Retrieve attributes relevant to given node(ID)

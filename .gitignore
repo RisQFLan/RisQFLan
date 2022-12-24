@@ -84,3 +84,7 @@ RisQFLan/matheval/bin/matheval/MathEval.class
 RisQFLan/matheval/bin/matheval/Test.class
 RisQFLan/matheval/.settings/org.eclipse.jdt.core.prefs
 .DS_Store
+RisQFLan/atree.xtext.ide/javaCompiler...args
+RisQFLan/atree.xtext.ui/javaCompiler...args
+RisQFLan/atree.product/javaCompiler...args
+RisQFLan/atree.xtext/javaCompiler...args
