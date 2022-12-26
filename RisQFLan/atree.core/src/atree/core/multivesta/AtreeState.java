@@ -203,11 +203,13 @@ public class AtreeState extends NewState {
 	@Override
 	public void noMoreStepsNecessary() {
 		super.noMoreStepsNecessary();
-		addSimulationTerminatedToLog();
+		if(!isLastStateAlreadyComputed()) {
+			addSimulationTerminatedToLog();
+		}
 	}
 	private void addSimulationTerminatedToLog() {
 		if(toLog && latestCaptionToValue!=null) {
-			latestCaptionToValue.put("activity", "simulationTerminated");
+			latestCaptionToValue.put("activity", "noMoreStepsNecessary");
 			addRowToLog(latestCaptionToValue);
 			latestCaptionToValue=null;
 		}
@@ -310,11 +312,13 @@ public class AtreeState extends NewState {
 		computeAllowedTransitions();
 		
 		if (stateInfo.getAllowedCommitments().size() == 0) {
+			addDeadlockLogRow();
 			setLastStateAlreadyComputed(true);
 		}
 		else {
 			double cumulativeRate = stateInfo.getCumulativeRate();
 			if (cumulativeRate == 0) {
+				addDeadlockLogRow();
 				setLastStateAlreadyComputed(true);
 			}
 			else {
@@ -331,10 +335,19 @@ public class AtreeState extends NewState {
 		}
 		//System.out.println("Step "+getNumberOfSteps());
 	}
+
+	private void addDeadlockLogRow() {
+		if(!isLastStateAlreadyComputed()) {
+			if(toLog) {
+				LinkedHashMap<String, String> captionToValue = defaultLogInfo(false);
+				captionToValue.put("activity", "deadlock");
+				addRowToLog(captionToValue);
+			}
+		}
+	}
 	
 	public void apply(Commitment commitment) {
 		loadedModel.apply(commitment);
-		
 	}
 
 	public Commitment chooseCommitment(double totalRate) {
@@ -347,9 +360,9 @@ public class AtreeState extends NewState {
 
 	private void computeAllowedTransitions() {
 		loadedModel.computeAllowedTransitions(stateInfo);
-		if(stateInfo.getAllowedCommitments().size() == 0) { //loadedModel.getNumberOfComputedCommitments()==0){
-			setLastStateAlreadyComputed(true);
-		}
+//		if(stateInfo.getAllowedCommitments().size() == 0) { //loadedModel.getNumberOfComputedCommitments()==0){
+//			setLastStateAlreadyComputed(true);
+//		}
 	}
 
 	@Override
